@@ -1,1 +1,5 @@
 work.ipynb
+dataset/
+.env
+venv/
+helper.txt
