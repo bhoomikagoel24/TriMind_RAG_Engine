@@ -1,5 +1,36 @@
-work.ipynb
 dataset/
 .env
 venv/
 helper.txt
+# Windows
+Thumbs.db
+
+# ----------------- Python -----------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment variables
+.env
+
+# Jupyter Notebook
+work.ipynb
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# VS Code
+.vscode/
+
+# ----------------- Data (Optional) -----------------
+# Uncomment if you don't want to push raw data
+
+TriMind_RAG_Engine/data/pdfs/*
+TriMind_RAG_Engine/data/txts/*
+TriMind_RAG_Engine/data/processed/*
