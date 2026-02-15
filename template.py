@@ -3,6 +3,7 @@ import os
 project_name = "TriMind_RAG_Engine"
 
 list_of_files = [
+    # ---------------- PACKAGE ---------------- #
     f"{project_name}/__init__.py",
 
     # DATA
@@ -38,16 +39,24 @@ list_of_files = [
     f"{project_name}/chains/conversational_chain.py",
     f"{project_name}/chains/rag_pipeline.py",
 
-    # TESTS
-    f"{project_name}/tests/__init__.py",
-    f"{project_name}/tests/test_memory.py",
-    f"{project_name}/tests/test_retrieval.py",
-    f"{project_name}/tests/test_performance.py",
+    # ---------------- LOGGING ---------------- #
+    f"{project_name}/logging/__init__.py",
+    f"{project_name}/logging/logger.py",
 
-    # ROOT FILES
-    f"{project_name}/main.py",
+    # ---------------- EXCEPTION HANDLER ---------------- #
+    f"{project_name}/exception_handler/__init__.py",
+    f"{project_name}/exception_handler/custom_exception.py",
+
+    # ---------------- ROOT LEVEL ---------------- #
+    "tests/__init__.py",
+    "tests/test_memory.py",
+    "tests/test_retrieval.py",
+    "tests/test_performance.py",
+
+    "main.py",
     "requirements.txt",
     ".env",
+    "setup.py",
     ".gitignore",
     "README.md",
 ]
@@ -59,7 +68,7 @@ for file_path in list_of_files:
         os.makedirs(dir_name, exist_ok=True)
 
     if not os.path.exists(file_path):
-        with open(file_path, "w") as f:
+        with open(file_path, "w", encoding="utf-8"):
             pass
 
 print("Project structure created successfully!")
