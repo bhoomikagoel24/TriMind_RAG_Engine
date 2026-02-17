@@ -1,65 +1,80 @@
-"""
-Document loading utilities
-"""
+import os
+import sys
+from typing import List
+
 from langchain_community.document_loaders import (
     PyPDFLoader,
+    TextLoader,
     DirectoryLoader
 )
-from typing import List
-from langchain.schema import Document
-import logging
+from langchain_core.documents import Document
 
-logger = logging.getLogger(__name__)
+from TriMind_RAG_Engine.logging.logger import get_logger
+from TriMind_RAG_Engine.exception_handler.custom_exception import CustomException
+from TriMind_RAG_Engine.config.config import DATA_PATH
 
-def load_pdfs(pdf_dir: str) -> List[Document]:
+
+logger = get_logger(__name__)
+
+# Load All Documents (PDF + TXT)
+
+def load_documents(data_path: str = DATA_PATH) -> List[Document]:
     """
-    Load all PDFs from directory
-    
-    Args:
-        pdf_dir: Path to PDF directory
-        
-    Returns:
-        List of Document objects
+    Load all supported documents from dataset folder.
     """
-    logger.info(f"Loading PDFs from: {pdf_dir}")
-    
+
     try:
-        loader = DirectoryLoader(
-            pdf_dir,
-            glob="**/*.pdf",
-            loader_cls=PyPDFLoader,
-            show_progress=True
-        )
-        
-        docs = loader.load()
-        logger.info(f"✅ Loaded {len(docs)} document pages")
-        
-        return docs
-        
-    except Exception as e:
-        logger.error(f"❌ Error loading PDFs: {e}")
-        return []
+        logger.info(f"Loading documents from: {data_path}")
 
-def filter_metadata(docs: List[Document]) -> List[Document]:
-    """
-    Keep only essential metadata
-    
-    Args:
-        docs: List of documents
-        
-    Returns:
-        Filtered documents
-    """
-    logger.info("Filtering metadata...")
-    
-    filtered = []
-    for doc in docs:
-        filtered.append(
-            Document(
-                page_content=doc.page_content,
-                metadata={"source": doc.metadata.get("source", "unknown")}
-            )
+        # Load PDFs
+        pdf_loader = DirectoryLoader(
+            data_path,
+            glob="**/*.pdf",
+            loader_cls=PyPDFLoader
         )
-    
-    logger.info(f"✅ Filtered {len(filtered)} documents")
-    return filtered
+
+        # Load TXTs
+        txt_loader = DirectoryLoader(
+            data_path,
+            glob="**/*.txt",
+            loader_cls=TextLoader
+        )
+
+        pdf_docs = pdf_loader.load()
+        txt_docs = txt_loader.load()
+
+        all_docs = pdf_docs + txt_docs
+
+        logger.info(f"Loaded {len(all_docs)} documents successfully")
+
+        return all_docs
+
+    except Exception as e:
+        logger.error("Error while loading documents")
+        raise CustomException(str(e), sys)
+
+
+# Filter Minimal Metadata
+def filter_minimal_metadata(docs: List[Document]) -> List[Document]:
+    """
+    Keep only essential metadata (source).
+    """
+
+    try:
+        minimal_docs = []
+
+        for doc in docs:
+            src = doc.metadata.get("source")
+
+            minimal_docs.append(
+                Document(
+                    page_content=doc.page_content,
+                    metadata={"source": src}
+                )
+            )
+
+        logger.info("Metadata filtered successfully")
+        return minimal_docs
+
+    except Exception as e:
+        raise CustomException(str(e), sys)
