@@ -1,46 +1,62 @@
-"""
-Document preprocessing and chunking
-"""
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+import sys
 from typing import List
-from langchain.schema import Document
-import logging
 
-logger = logging.getLogger(__name__)
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
 
-def chunk_documents(
-    documents: List[Document],
-    chunk_size: int = 500,
-    chunk_overlap: int = 100
-) -> List[Document]:
+from TriMind_RAG_Engine.config.config import (
+    CHUNK_SIZE,
+    CHUNK_OVERLAP
+)
+from TriMind_RAG_Engine.logging.logger import get_logger
+from TriMind_RAG_Engine.exception_handler.custom_exception import CustomException
+
+
+logger = get_logger(__name__)
+
+
+# Chunk Documents
+def chunk_documents(documents: List[Document]) -> List[Document]:
     """
-    Split documents into chunks
-    
-    Args:
-        documents: List of documents
-        chunk_size: Size of each chunk
-        chunk_overlap: Overlap between chunks
-        
-    Returns:
-        Chunked documents
+    Split documents into smaller chunks for embedding.
     """
-    logger.info(f"Chunking {len(documents)} documents...")
-    logger.info(f"Chunk size: {chunk_size}, Overlap: {chunk_overlap}")
-    
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap,
-        length_function=len,
-        separators=["\n\n", "\n", ". ", " ", ""]
-    )
-    
-    chunks = text_splitter.split_documents(documents)
-    
-    # Add chunk metadata
-    for idx, chunk in enumerate(chunks):
-        chunk.metadata["chunk_id"] = idx
-        chunk.metadata["chunk_length"] = len(chunk.page_content)
-    
-    logger.info(f"✅ Created {len(chunks)} chunks")
-    
-    return chunks
+
+    try:
+        logger.info("Starting document chunking...")
+
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=CHUNK_SIZE,
+            chunk_overlap=CHUNK_OVERLAP,
+            separators=[
+                "\n## ",
+                "\n### ",
+                "\n\n",
+                "\n",
+                ". ",
+                " ",
+                ""
+            ]
+        )
+
+        chunks = text_splitter.split_documents(documents)
+
+        # Add metadata enhancements
+        for idx, chunk in enumerate(chunks):
+            chunk.metadata["chunk_id"] = idx
+            chunk.metadata["chunk_length"] = len(chunk.page_content)
+
+        logger.info(f"Created {len(chunks)} chunks successfully")
+
+        return chunks
+
+    except Exception as e:
+        logger.error("Error during chunking")
+        raise CustomException(str(e), sys)
+
+# Covering The Concepts
+# ✔ Smart splitting
+# ✔ Chunk overlap for context
+# ✔ Metadata enrichment
+# ✔ Logging
+# ✔ Exception handling
+# ✔ Config driven
