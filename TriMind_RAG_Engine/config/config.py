@@ -38,7 +38,7 @@ MEMORY_WINDOW = 5
 MEMORY_MAX_TOKENS = 2000
 
 # Pinecone Configuration
-PINECONE_INDEX_NAME = "ai-engineering-hub"
+PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME", "ai-engineering-hub")
 PINECONE_CLOUD = "aws"
 PINECONE_REGION = "us-east-1"
 
