@@ -27,11 +27,13 @@ list_of_files = [
     f"{project_name}/utils/preprocessing.py",
     f"{project_name}/utils/embeddings.py",
     f"{project_name}/utils/vector_store.py",
+    f"{project_name}/utils/document_processing.py",
     f"{project_name}/utils/evaluation.py",
 
     # MEMORY
     f"{project_name}/memory/__init__.py",
     f"{project_name}/memory/conversation_memory.py",
+    f"{project_name}/memory/redis_memory.py", 
 
     # CHAINS
     f"{project_name}/chains/__init__.py",
@@ -39,6 +41,14 @@ list_of_files = [
     f"{project_name}/chains/conversational_chain.py",
     f"{project_name}/chains/rag_pipeline.py",
 
+    # ---------------- SERVICES ---------------- #
+    f"{project_name}/services/__init__.py", 
+    f"{project_name}/services/rag_service.py",
+
+    # ---------------- INTERFACES ---------------- #
+    f"{project_name}/interfaces/__init__.py",  # NEW
+    f"{project_name}/interfaces/cli.py", 
+    
     # ---------------- LOGGING ---------------- #
     f"{project_name}/logging/__init__.py",
     f"{project_name}/logging/logger.py",
