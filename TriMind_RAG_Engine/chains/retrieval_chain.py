@@ -90,24 +90,53 @@ def create_advanced_retriever(vectorstore, k: int = TOP_K):
 # =========================================================
 # CREATE RAG CHAIN
 # =========================================================
+from TriMind_RAG_Engine.utils.document_processing import process_documents
 
 def create_rag_chain(llm, retriever):
     """
-    Create RetrievalQA chain
+    Custom RAG chain with document post-processing
     """
 
-    try:
-        logger.info("Initializing RetrievalQA chain")
+    class CustomRAGChain:
 
-        chain = RetrievalQA.from_chain_type(
-            llm=llm,
-            chain_type="stuff",
-            retriever=retriever,
-            return_source_documents=True
-        )
+        def __init__(self, llm, retriever):
+            self.llm = llm
+            self.retriever = retriever
 
-        logger.info("RAG chain ready")
-        return chain
+        def invoke(self, inputs: dict):
+            query = inputs.get("query")
 
-    except Exception as e:
-        raise CustomException(str(e), sys)
+            # 1️⃣ Retrieve documents
+            raw_docs = self.retriever.invoke(query)
+
+            # 2️⃣ Clean them
+            processed_docs = process_documents(query, raw_docs)
+
+            # 3️⃣ Build context
+            context = "\n\n".join(
+                [doc.page_content for doc in processed_docs]
+            )
+
+            # 4️⃣ Create final prompt
+            prompt = f"""
+            Use ONLY the context below to answer.
+
+            Context:
+            {context}
+
+            Question:
+            {query}
+
+            Answer:
+            """
+
+            response = self.llm.invoke(prompt)
+
+            return {
+                "result": response.content,
+                "source_documents": processed_docs
+            }
+
+    logger.info("Custom RAG chain ready")
+
+    return CustomRAGChain(llm, retriever)
