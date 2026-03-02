@@ -27,7 +27,8 @@ logger = get_logger(__name__)
 def create_vector_store(
     chunks,
     embeddings,
-    store_type: Literal["faiss", "chroma", "pinecone"] = "faiss"
+    store_type: Literal["faiss", "chroma", "pinecone"] = "faiss",
+    force:bool = False  # as if index exists it will reuse
 ):
 
     try:
@@ -69,6 +70,11 @@ def create_vector_store(
                 raise ValueError("PINECONE_API_KEY not set in .env")
 
             pc = Pinecone(api_key=PINECONE_API_KEY)
+
+            # Force deleting existing index
+            if force and pc.has_index(PINECONE_INDEX_NAME):
+                logger.info(f"Force enabled. Deleting index: {PINECONE_INDEX_NAME}")
+                pc.delete_index(PINECONE_INDEX_NAME)
 
             # Detect embedding dimension automatically
             sample_vector = embeddings.embed_query("test")
