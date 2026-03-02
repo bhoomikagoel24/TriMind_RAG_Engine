@@ -1,0 +1,22 @@
+from langchain_classic.chains import ConversationalRetrievalChain
+from TriMind_RAG_Engine.memory.conversation_memory import get_conversation_memory
+
+
+def create_conversational_chain(llm, retriever):
+    """
+    Creates a Conversational RAG chain with short-term memory.
+    """
+
+    # Create memory
+    memory = get_conversation_memory(window_size=5)
+
+    # Create conversational chain
+    chain = ConversationalRetrievalChain.from_llm(
+        llm=llm,
+        retriever=retriever,
+        memory=memory,
+        return_source_documents=True,
+        verbose=False
+    )
+
+    return chain
