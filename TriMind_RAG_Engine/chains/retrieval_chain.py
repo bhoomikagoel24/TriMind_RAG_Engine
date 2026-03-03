@@ -23,7 +23,9 @@ def create_basic_retriever(vectorstore, k: int = TOP_K):
     """
     try:
         logger.info(f"Creating basic retriever with k={k}")
-        return vectorstore.as_retriever(search_kwargs={"k": k})
+        return vectorstore.as_retriever(
+            search_type="mmr",                           # MMR = Max Marginal Relevance
+            search_kwargs={"k": k,"fetch_k":20})         # Instead of Top 10 similar chunks It gives Top 10 relevant but diverse chunks
     except Exception as e:
         raise CustomException(str(e), sys)
 
