@@ -18,10 +18,11 @@ def deduplicate_sources(docs: List[Document]) -> List[Document]:
     unique_docs = []
 
     for doc in docs:
-        key = (
-            doc.metadata.get("source"),
-            doc.metadata.get("page")
-        )
+        # key = (
+        #     doc.metadata.get("source"),
+        #     doc.metadata.get("page")
+        # )
+        key = hash(doc.page_content.strip())
 
         if key not in seen:
             seen.add(key)
@@ -62,7 +63,7 @@ def filter_toc_pages(docs: List[Document]) -> List[Document]:
         )
 
         is_toc = (
-            len(content.split()) >= 50 and
+            len(content.split()) < 200 and
             (has_many_dots or has_many_newlines or has_toc_keywords or has_toc_pattern)
         )
 
@@ -100,7 +101,7 @@ def process_documents(query: str, docs: List[Document]) -> List[Document]:
     2. Remove duplicates
     3. Reorder for optimal LLM attention
     """
-
+    print(f"After cleaning: {len(docs)} documents")
     # Step 1: Remove TOC
     docs = filter_toc_pages(docs)
 
