@@ -6,12 +6,6 @@ list_of_files = [
     # ---------------- PACKAGE ---------------- #
     f"{project_name}/__init__.py",
 
-    # DATA
-    f"{project_name}/data/__init__.py",
-    f"{project_name}/data/pdfs/.gitkeep",
-    f"{project_name}/data/txts/.gitkeep",
-    f"{project_name}/data/processed/.gitkeep",
-
     # CONFIG
     f"{project_name}/config/__init__.py",
     f"{project_name}/config/config.py",
@@ -29,6 +23,7 @@ list_of_files = [
     f"{project_name}/utils/vector_store.py",
     f"{project_name}/utils/document_processing.py",
     f"{project_name}/utils/evaluation.py",
+    f"{project_name}/utils/cache.py",
 
     # MEMORY
     f"{project_name}/memory/__init__.py",
@@ -44,10 +39,14 @@ list_of_files = [
     # ---------------- SERVICES ---------------- #
     f"{project_name}/services/__init__.py", 
     f"{project_name}/services/rag_service.py",
+    f"{project_name}/services/ingestion_service.py",
 
     # ---------------- INTERFACES ---------------- #
     f"{project_name}/interfaces/__init__.py",  # NEW
     f"{project_name}/interfaces/cli.py", 
+    f"{project_name}/interfaces/api/__init__.py",
+    f"{project_name}/interfaces/api/app.py",
+    f"{project_name}/interfaces/api/routes.py",
     
     # ---------------- LOGGING ---------------- #
     f"{project_name}/logging/__init__.py",
@@ -58,11 +57,12 @@ list_of_files = [
     f"{project_name}/exception_handler/custom_exception.py",
 
     # ---------------- ROOT LEVEL ---------------- #
-    "tests/__init__.py",
-    "tests/test_memory.py",
-    "tests/test_retrieval.py",
-    "tests/test_performance.py",
 
+    # "tests/__init__.py",
+    # "tests/test_memory.py",
+    # "tests/test_retrieval.py",
+    # "tests/test_performance.py",
+    "streamlit_app.py",
     "main.py",
     "requirements.txt",
     ".env",
