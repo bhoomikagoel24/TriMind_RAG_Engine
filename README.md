@@ -1,175 +1,167 @@
-# 🧠 TriMind_RAG_Engine
+# 🧠 TriMind RAG Engine
 
-TriMind_RAG_Engine is an advanced Retrieval-Augmented Generation (RAG) system that enhances Large Language Models (LLMs) with external knowledge, intelligent retrieval, domain-aware reasoning, and conversational memory.  
-It is designed to answer complex queries accurately by combining vector search, contextual compression, and LLM-based routing.
+> **Advanced & Scalable Retrieval-Augmented Generation System**  
+> Intelligent Retrieval · Query Optimization · Domain Routing · Conversational Memory · Evaluation Layer
 
----
-
-## 📌 What is TriMind_RAG_Engine?
-
-TriMind_RAG_Engine extends the capabilities of LLMs by allowing them to retrieve relevant information from a custom document corpus before generating responses.  
-Instead of relying only on the model’s internal knowledge, the system grounds answers in retrieved documents, reducing hallucinations and improving factual accuracy.
-
-The name **TriMind** represents:
-- **Retrieval Intelligence**
-- **Reasoning & Routing**
-- **Memory Awareness**
+![Python](https://img.shields.io/badge/Python-3.10+-blue?style=flat-square&logo=python)
+![LangChain](https://img.shields.io/badge/LangChain-Framework-green?style=flat-square)
+![Pinecone](https://img.shields.io/badge/Pinecone-VectorDB-purple?style=flat-square)
+![Groq](https://img.shields.io/badge/Groq-LLM-orange?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
 
 ---
 
-## 🏗️ System Architecture Overview
+## 📌 Overview
 
-The system follows a modular, multi-stage pipeline:
+**TriMind RAG Engine** is a modular, end-to-end Retrieval-Augmented Generation system designed to enhance Large Language Models with external knowledge, intelligent retrieval strategies, domain-aware reasoning, and conversational memory.
 
-- Document ingestion and preprocessing  
-- Text chunking and embedding generation  
-- Vector-based semantic retrieval  
-- Query expansion and contextual compression  
-- Domain-based routing (AI / Data Science / MCP / General)  
-- LLM-driven answer generation  
-- Conversational memory management  
+Unlike basic RAG implementations, TriMind focuses on **reliability**, **contextual understanding**, and **observability** — enabling accurate, grounded, and explainable responses over large document collections.
+
+---
+
+## 💡 Why TriMind?
+
+Most RAG systems stop at retrieval and generation. TriMind goes further:
+
+| Capability | Description |
+|---|---|
+| ✅ Intelligent Retrieval | Multi-query expansion + contextual compression |
+| ✅ Query Optimization | Rewriting and expansion for improved recall |
+| ✅ Domain Routing | Specialized reasoning pipelines per knowledge domain |
+| ✅ Memory-Aware Conversations | Multi-turn context with window + summarized memory |
+| ✅ Hallucination Reduction | Grounding score + confidence scoring per response |
+| ✅ Evaluation Layer | Latency tracking + retrieval quality observability |
+| ✅ Modular Architecture | Plug-and-play components for easy extensibility |
+
+---
+
+## 🔄 RAG Pipeline — Detailed Flow
+```
+User Query
+    ↓
+Query Understanding & Rewriting
+    ↓
+Embedding Generation
+    ↓
+Vector Search (Pinecone) → Top-K Retrieval
+    ↓
+Document Preprocessing
+    ├── TOC Filtering
+    ├── Deduplication
+    └── Context Reordering
+    ↓
+Retrieval Evaluation
+    ↓
+Context Assembly + Prompt Templating
+    ↓
+LLM Generation
+    ↓
+Post-processing
+    ├── Grounding Score  (Hallucination Check)
+    └── Confidence Score
+    ↓
+Cache Check / Store
+    ↓
+✅ Final Answer to User
+```
 
 ---
 
 ## ✨ Key Features
 
-- 📄 **Document Ingestion**
-  - Loads PDF documents from a dataset directory
-  - Each page is treated as a separate document unit
+### 📄 Document Ingestion
+- Supports PDF and text-based corpora
+- Page-level document granularity for precise retrieval
 
-- ✂️ **Smart Chunking**
-  - Recursive text splitting with overlap
-  - Preserves semantic continuity for better retrieval
+### ✂️ Smart Chunking
+- Recursive chunking with configurable overlap
+- Preserves semantic continuity across chunk boundaries
 
-- 🔢 **Semantic Embeddings**
-  - Converts text into dense vectors using transformer-based embedding models
+### 🔢 Semantic Embeddings
+- Transformer-based embeddings via HuggingFace
+- Optimized for high-quality semantic similarity search
 
-- 🧠 **Vector Database Integration**
-  - Stores embeddings in Pinecone for fast similarity search
+### 🔍 Advanced Retrieval
+- **Multi-query expansion** to maximize recall
+- **Contextual compression** to minimize noise
+- TOC filtering, deduplication, and context reordering
 
-- 🔍 **Advanced Retrieval**
-  - Multi-query expansion to improve recall
-  - Contextual compression to remove irrelevant content
-  - Deduplication and reordering of documents
+### 🔀 Domain-Aware Routing
+Queries are automatically routed to specialized reasoning pipelines:
 
-- 🔀 **Domain-Aware Routing**
-  - Routes questions to specialized chains:
-    - AI Engineering
-    - Data Science
-    - MCP
-    - General Knowledge
+| Domain | Focus Area |
+|---|---|
+| 🤖 AI Engineering | LLMs, RAG, embeddings, vector databases |
+| 📊 Data Science | ML concepts, statistics, model evaluation |
+| 🔗 MCP | Model Context Protocol and agentic patterns |
+| 🌐 General Knowledge | Fallback for broad or mixed queries |
 
-- 💬 **Conversational Memory**
-  - Maintains short-term context for follow-up questions
-  - Supports summarized and window-based memory
+### 💬 Conversational Memory
+- Short-term context retention across turns
+- Window-based and summarized memory strategies
+- Enables accurate follow-up query understanding
 
-- 📊 **Observability & Metrics**
-  - Tracks retrieval latency and LLM response time
-  - Useful for performance analysis and optimization
-
----
-
-## 🧠 Retrieval-Augmented Generation (RAG) Flow
-
-- User query analysis and classification  
-- Semantic retrieval from vector store  
-- Context filtering, compression, and reordering  
-- Domain-specific prompt application  
-- Grounded response generation  
-- Conversational context update  
+### 🛡️ Reliability & Evaluation
+- **Grounding Score** — measures how well the response is anchored in retrieved context
+- **Confidence Score** — signals response reliability to the user
+- **Cache layer** — reduces redundant LLM calls for repeated queries
+- Retrieval latency and LLM response time logging
 
 ---
 
-## 🗂️ Project Structure
+## ⚙️ Tech Stack
 
-```bash
-TriMind_RAG_Engine/
-│
-├── data/                    # Raw and processed documents
-│   ├── pdfs/                # PDF knowledge sources
-│   ├── txts/                # Text documents
-│   └── processed/           # Cleaned / chunked data
-│
-├── config/                  # Configuration files
-│   └── config.py
-│
-├── prompts/                 # Prompt templates
-│   ├── rag_prompt_template.py
-│   └── query_analysis_prompt.py
-│
-├── utils/                   # Core utilities
-│   ├── document_loader.py
-│   ├── preprocessing.py
-│   ├── embeddings.py
-│   ├── vector_store.py
-│   └── evaluation.py
-│
-├── memory/                  # Conversational memory handling
-│   └── conversation_memory.py
-│
-├── chains/                  # RAG and conversational chains
-│   ├── retrieval_chain.py
-│   ├── conversational_chain.py
-│   └── rag_pipeline.py
-│
-├── tests/                   # Unit and performance tests
-│   ├── test_memory.py
-│   ├── test_retrieval.py
-│   └── test_performance.py
-│
-├── main.py                  # Application entry point
-├── requirements.txt
-├── .env
-├── .gitignore
-└── README.md
-```
----
-
-## ⚙️ Technologies Used
-
-- **LangChain** – RAG pipelines and chains  
-- **Pinecone** – Vector database  
-- **HuggingFace Transformers** – Embeddings  
-- **Groq LLMs (LLaMA)** – Language model inference  
-- **Python** – Core implementation  
+| Layer | Technology |
+|---|---|
+| Language | Python 3.10+ |
+| RAG Framework | LangChain |
+| Vector Database | Pinecone |
+| Embeddings | HuggingFace Transformers |
+| LLM Backend | Groq (LLaMA-based models) |
+| Optional API Layer | FastAPI |
 
 ---
 
 ## 🚀 Use Cases
 
-- Intelligent document-based chatbots  
-- AI-powered knowledge assistants  
-- Research and academic Q&A systems  
-- Domain-specific expert systems  
-- Foundation for agentic RAG architectures  
+- 🤖 AI-powered knowledge assistants
+- 📄 Document-based Q&A over large corpora
+- 🔬 Research and domain-specific expert systems
+- 🧩 Foundation layer for agentic RAG workflows
 
 ---
 
 ## 📈 Current Capabilities
 
-- Text-based RAG (PDF documents)
-- Multi-domain query handling
-- Multi-turn conversational support
-- Modular and extensible design
+- [x] Multi-document RAG over PDFs
+- [x] Query rewriting and multi-query expansion
+- [x] Context-aware multi-turn conversations
+- [x] Domain-based query routing
+- [x] Grounding and confidence scoring
+- [x] Response caching layer
+- [x] Modular and extensible pipeline architecture
 
 ---
 
 ## 🔮 Future Enhancements
 
-- Multimodal RAG (text + images)
-- Hybrid retrieval (dense + sparse)
-- Answer verification and self-evaluation
-- Tool-augmented and agentic workflows
+- [ ] Hybrid retrieval — dense + sparse (BM25)
+- [ ] Multimodal RAG — text + image understanding
+- [ ] Self-evaluation and answer verification loop
+- [ ] Tool-augmented agentic workflows
 
 ---
 
-## 📜 License
+## 🧠 Key Highlight
 
-This project is designed for experimentation, and exploratory development in Retrieval-Augmented Generation systems.
+> **TriMind is not just a RAG chatbot.**  
+> It is a modular, evaluation-aware knowledge system engineered to improve retrieval  
+> quality, reduce hallucinations, and enable context-aware reasoning over domain-specific data.
 
 ---
 
 ## 👤 Author
 
 **Bhoomika Goel**  
-AI & Software Engineering Practitioner
+AI & Software Engineering Practitioner  
+[![GitHub](https://img.shields.io/badge/GitHub-bhoomikagoel24-black?style=flat-square&logo=github)](https://github.com/bhoomikagoel24)
