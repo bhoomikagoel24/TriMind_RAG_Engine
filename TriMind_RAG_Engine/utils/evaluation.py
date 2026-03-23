@@ -26,18 +26,17 @@ def evaluate_retrieval(query: str, docs: List[Document]):
 def compute_grounding_score(answer: str, docs):
 
     if not docs:
-        print("Grounding Score: 0 (No documents)")
         return 0
 
-    answer_lower = answer.lower()
-    match_count = 0
+    answer_words = set(answer.lower().split())
+    doc_words = set()
 
     for doc in docs:
-        snippet = doc.page_content[:300].lower()
-        if snippet in answer_lower:
-            match_count += 1
+        doc_words.update(doc.page_content.lower().split())
 
-    score = match_count / len(docs)
+    overlap = answer_words.intersection(doc_words)
+
+    score = len(overlap) / (len(answer_words) + 1)
 
     print(f"Grounding Score: {round(score, 2)}")
 
@@ -46,23 +45,26 @@ def compute_grounding_score(answer: str, docs):
 
     return score
 
+
 # Compute Confidence Score 
 # it depends on source diversity and answer completeness
-def compute_confidence_score(answer: str, docs):
+def compute_confidence_score(answer: str, docs, grounding_score=0):
 
     if not docs:
         return 0.0
 
-    unique_sources = len(set(
-        doc.metadata.get("source", "")
-        for doc in docs
-    ))
-
+    unique_sources = len(set(doc.metadata.get("source", "") for doc in docs))
     diversity_score = unique_sources / len(docs)
 
     answer_length_score = min(len(answer.split()) / 50, 1)
 
-    confidence = round((diversity_score * 0.6) + (answer_length_score * 0.4), 2)
+    # include grounding
+    confidence = round(
+        (diversity_score * 0.5) +
+        (answer_length_score * 0.3) +
+        (grounding_score * 0.2),
+        2
+    )
 
     print(f"Confidence Score: {confidence}")
 
