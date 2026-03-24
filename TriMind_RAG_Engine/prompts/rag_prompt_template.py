@@ -1,8 +1,8 @@
 """
 Prompt templates for different query types
 """
-from langchain.prompts import PromptTemplate, ChatPromptTemplate
-from langchain.schema import SystemMessage, HumanMessage
+from langchain_core.prompts import PromptTemplate, ChatPromptTemplate
+from langchain_core.messages import AIMessage,SystemMessage,HumanMessage,ToolMessage
 
 # ============================================
 # AI Engineering Prompt
@@ -74,18 +74,29 @@ Answer:""",
 # Conversational Prompt (with history)
 # ============================================
 
-CONVERSATIONAL_PROMPT = ChatPromptTemplate.from_messages([
-    SystemMessage(content="""You are an expert AI/Data Science/MCP assistant.
-    Use conversation history and context to provide accurate answers.
-    Maintain continuity in the conversation."""),
-    HumanMessage(content="""
+# from langchain.prompts import ChatPromptTemplate
+
+CONVERSATIONAL_PROMPT = ChatPromptTemplate.from_template(
+"""
+You are an expert AI/Data Science/MCP assistant.
+
+Use the provided context to answer the question accurately.
+If the answer is not in context, say:
+"I don't have enough information from the knowledge base."
+
+---------------------
 Chat History:
 {chat_history}
 
+---------------------
 Context:
 {context}
 
-Question: {question}
+---------------------
+Question:
+{question}
 
-Answer:""")
-])
+---------------------
+Answer:
+"""
+)
