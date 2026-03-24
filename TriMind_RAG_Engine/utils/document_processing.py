@@ -18,11 +18,12 @@ def deduplicate_sources(docs: List[Document]) -> List[Document]:
     unique_docs = []
 
     for doc in docs:
-        # key = (
-        #     doc.metadata.get("source"),
-        #     doc.metadata.get("page")
-        # )
-        key = hash(doc.page_content.strip())
+        key = (
+            doc.metadata.get("source"),
+            doc.metadata.get("page"),
+            doc.page_content[:100]
+        )
+        # key = hash(doc.page_content.strip())
 
         if key not in seen:
             seen.add(key)
@@ -58,13 +59,13 @@ def filter_toc_pages(docs: List[Document]) -> List[Document]:
             ]
         )
 
-        has_toc_pattern = bool(
-            re.search(r"\d+\.\d+\).*\.{3,}", content)
-        )
+        # has_toc_pattern = bool(
+        #     re.search(r"\d+\.\d+\).*\.{3,}", content)
+        # )
 
         is_toc = (
             len(content.split()) < 200 and
-            (has_many_dots or has_many_newlines or has_toc_keywords or has_toc_pattern)
+            (has_many_dots or has_many_newlines or has_toc_keywords or has_toc_keywords)#has_toc_pattern)
         )
 
         if not is_toc:
