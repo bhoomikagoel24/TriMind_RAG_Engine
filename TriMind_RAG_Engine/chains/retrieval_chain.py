@@ -6,9 +6,10 @@ from langchain_core.retrievers import BaseRetriever
 from langchain_classic.chains import RetrievalQA
 
 from TriMind_RAG_Engine.config.config import TOP_K
+from TriMind_RAG_Engine.config.config import SIMILARITY_THRESHOLD
 from TriMind_RAG_Engine.logging.logger import get_logger
 from TriMind_RAG_Engine.exception_handler.custom_exception import CustomException
-
+# High-Quality chlunks -> better answers
 
 logger = get_logger(__name__)
 
@@ -34,20 +35,16 @@ def create_basic_retriever(vectorstore, k: int = TOP_K):
 # ADVANCED RETRIEVER (Custom Scoring Logic)
 # =========================================================
 
-def create_advanced_retriever(vectorstore, k: int = TOP_K):
+def create_advanced_retriever(vectorstore, k: int = TOP_K, threshold:float=SIMILARITY_THRESHOLD):
     """
-    Custom retriever with scoring boost logic
+    Custom retriever with scoring boost logic and similarity threshold filtering.
     """
 
     class EfficientRetriever(BaseRetriever):
         vectorstore: object
         k: int
 
-        def _get_relevant_documents(
-            self,
-            query: str,
-            **kwargs
-        ) -> List[Document]:
+        def _get_relevant_documents(self,query: str,**kwargs ) -> List[Document]:
 
             candidates = self.vectorstore.similarity_search_with_relevance_scores(
                 query,
@@ -57,7 +54,20 @@ def create_advanced_retriever(vectorstore, k: int = TOP_K):
             scored_docs = []
             query_lower = query.lower()
 
+            filtered_docs = []
+
             for doc, base_score in candidates:
+
+                # threshold filtering
+                if base_score >= threshold:
+                    filtered_docs.append((doc, base_score))
+
+            # fallback (VERY IMPORTANT)
+            if not filtered_docs:
+                filtered_docs = candidates[:self.k]            
+            
+            for doc, base_score in filtered_docs:
+                
                 content_lower = doc.page_content.lower()
                 boost = 0
 
@@ -77,7 +87,8 @@ def create_advanced_retriever(vectorstore, k: int = TOP_K):
                     ) / len(query_terms)
                     boost += coverage * 0.1
 
-                final_score = base_score + boost
+                length_penalty = len(content_lower) / 1000
+                final_score = base_score + boost - length_penalty
                 scored_docs.append((doc, final_score))
 
             # Sort by boosted score
@@ -85,8 +96,8 @@ def create_advanced_retriever(vectorstore, k: int = TOP_K):
 
             return [doc for doc, _ in scored_docs[:self.k]]
 
-    logger.info(f"Creating advanced retriever with k={k}")
-    return EfficientRetriever(vectorstore=vectorstore, k=k)
+    # logger.info(f"Creating advanced retriever with k={k}")
+    return EfficientRetriever(vectorstore=vectorstore, k=k, threshold= SIMILARITY_THRESHOLD)
 
 
 # =========================================================
@@ -94,10 +105,9 @@ def create_advanced_retriever(vectorstore, k: int = TOP_K):
 # =========================================================
 from TriMind_RAG_Engine.utils.document_processing import process_documents
 
+MAX_CONTEXT_LENGTH = 1500   # context windoe limit
+
 def create_rag_chain(llm, retriever):
-    """
-    Custom RAG chain with document post-processing
-    """
 
     class CustomRAGChain:
 
@@ -106,22 +116,38 @@ def create_rag_chain(llm, retriever):
             self.retriever = retriever
 
         def invoke(self, inputs: dict):
-            query = inputs.get("query")
 
-            # 1️⃣ Retrieve documents
+            query = inputs.get("query") or inputs.get("question")
+
             raw_docs = self.retriever.invoke(query)
-
-            # 2️⃣ Clean them
             processed_docs = process_documents(query, raw_docs)
 
-            # 3️⃣ Build context
-            context = "\n\n".join(
-                [doc.page_content for doc in processed_docs]
-            )
+            # context control
+            context_chunks = []
+            total_length = 0
 
-            # 4️⃣ Create final prompt
+            for doc in processed_docs:
+                chunk = doc.page_content
+
+                if total_length + len(chunk) > MAX_CONTEXT_LENGTH:
+                    break
+
+                context_chunks.append(chunk)
+                total_length += len(chunk)
+
+            context = "\n\n".join(context_chunks)
+
             prompt = f"""
-            Use ONLY the context below to answer.
+            You are an expert AI assistant.
+
+            Use ONLY the provided context to answer.
+
+            Instructions:
+            - Give a clear and structured answer
+            - Start with a short definition (if applicable)
+            - Then explain step-by-step or in bullet points
+            - Do NOT use outside knowledge
+            - If answer is not in context → say "Not available in context"
 
             Context:
             {context}
@@ -135,7 +161,7 @@ def create_rag_chain(llm, retriever):
             response = self.llm.invoke(prompt)
 
             return {
-                "result": response.content,
+                "answer": response.content,
                 "source_documents": processed_docs
             }
 
