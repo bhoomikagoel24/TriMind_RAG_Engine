@@ -96,7 +96,6 @@ def create_advanced_retriever(vectorstore, k: int = TOP_K, threshold:float=SIMIL
 
             return [doc for doc, _ in scored_docs[:self.k]]
 
-    # logger.info(f"Creating advanced retriever with k={k}")
     return EfficientRetriever(vectorstore=vectorstore, k=k, threshold= SIMILARITY_THRESHOLD)
 
 
