@@ -38,7 +38,9 @@ Every component has an engineering reason to exist — from query rewriting befo
 
 > Real pipeline execution — not mocked, not simulated.
 
-![Backend Terminal Output](assets/backend_terminal.jpeg)
+<div align="center">
+  <img src="assets/backend_terminal.jpeg" width="780" alt="TriMind Backend Terminal Output" />
+</div>
 
 ```
 Query rewritten  :  "what is mcp"  →  "mcp definition"
@@ -58,7 +60,9 @@ RAG pipeline execution completed.
 
 > End-to-end pipeline — from raw user query to evaluated, grounded final answer.
 
-![TriMind RAG Pipeline Architecture](assets/architecture.png)
+<div align="center">
+  <img src="assets/architecture.png" width="900" alt="TriMind RAG Pipeline Architecture" />
+</div>
 
 The architecture covers every stage of a production RAG system:
 
@@ -83,7 +87,9 @@ The architecture covers every stage of a production RAG system:
 
 > Multi-turn conversation with domain-aware, grounded responses.
 
-![TriMind Live UI](assets/ui_screenshot.png)
+<div align="center">
+  <img src="assets/ui_screenshot.png" width="650" alt="TriMind Live UI" />
+</div>
 
 ---
 
